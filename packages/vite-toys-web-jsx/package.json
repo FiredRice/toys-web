@@ -1,14 +1,14 @@
 {
 	"name": "vite-toys-web-jsx",
 	"version": "1.0.0",
-	"description": "toys-web的Vite项目jsx解析插件",
+	"description": "toys-web 的 Vite 项目 jsx 解析插件",
+	"author": "东北炒饭",
+	"license": "MIT",
 	"main": "lib/index.js",
 	"scripts": {
 		"start": "ts-node ./src/index.ts",
 		"build": "tsc --project tsconfig.prod.cjs.json"
 	},
-	"author": "",
-	"license": "ISC",
 	"devDependencies": {
 		"@types/csso": "^5.0.4",
 		"@types/less": "^3.0.6",
@@ -18,5 +18,22 @@
 	"dependencies": {
 		"csso": "^5.0.5",
 		"less": "^4.2.0"
-	}
+	},
+	"publishConfig": {
+		"registry": "https://registry.npmjs.org/"
+	},
+	"keywords": [
+		"web component",
+		"vite",
+		"tsx",
+		"jsx"
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/FiredRice/toys-web/tree/master/packages/vite-toys-web-jsx"
+	},
+	"files": [
+		"lib",
+		"LICENSE"
+	]
 }

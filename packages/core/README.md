@@ -63,7 +63,7 @@ npm install vite-toys-web-jsx -D
 也可以在 [jsDelivr](http://www.jsdelivr.com/projects/toys-web) 中使用
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/toys-web@1.0.0/lib/bundles/toys-web.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/toys-web/lib/bundles/toys-web.umd.min.js"></script>
 <script>
     const Modal = ToysWeb.WebComponent(function() {
         return `<div></div>`;
@@ -72,7 +72,7 @@ npm install vite-toys-web-jsx -D
 </script>
 或者
 <script type="module">
-    import { WebComponent } from 'https://cdn.jsdelivr.net/npm/toys-web@1.0.0/lib/bundles/toys-web.umd.min.js';
+    import { WebComponent } from 'https://cdn.jsdelivr.net/npm/toys-web/lib/bundles/toys-web.es.min.js';
     const Modal = WebComponent(function() {
         return `<div></div>`;
     });
