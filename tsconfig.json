@@ -1,0 +1,30 @@
+{
+	"compilerOptions": {
+		"module": "CommonJS",
+		"moduleResolution": "Node",
+		"target": "ESNext",
+		"lib": [
+			"ESNext",
+			"DOM",
+			"DOM.Iterable"
+		],
+		"strict": true,
+		"sourceMap": false,
+		"composite": true,
+		"allowJs": false,
+		"resolveJsonModule": true,
+		"esModuleInterop": true,
+		"experimentalDecorators": true,
+		"useDefineForClassFields": false,
+		"emitDecoratorMetadata": true,
+		"forceConsistentCasingInFileNames": true,
+		"noImplicitAny": false,
+		"noImplicitThis": false,
+	},
+	"exclude": [
+		"**/bin/*",
+		"**/lib/*",
+		"**/dist/*",
+		"**/node_modules/*"
+	]
+}

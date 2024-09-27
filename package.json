@@ -1,0 +1,23 @@
+{
+	"name": "toys-web",
+	"private": true,
+	"workspaces": [
+		"packages/*"
+	],
+	"license": "MIT",
+	"homepage": "https://github.com/FiredRice/ts-mugen",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/FiredRice/ts-mugen"
+	},
+	"scripts": {
+		"link": "lerna link",
+		"install": "lerna bootstrap",
+		"clean": "lerna clean",
+		"build": "yarn build:bili-comment",
+		"build:bili-comment": "yarn workspace bili-comment-filter build"
+	},
+	"devDependencies": {
+		"lerna": "^5.6.2"
+	}
+}

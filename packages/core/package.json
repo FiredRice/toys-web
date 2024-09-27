@@ -1,0 +1,42 @@
+{
+	"name": "toys-web",
+	"version": "1.0.0",
+	"description": "一个可以让你使用 hooks 开发 web component 的玩具项目",
+	"author": "东北炒饭",
+	"license": "MIT",
+	"main": "lib/esm6/index.js",
+	"typings": "lib/types/index.d.ts",
+	"scripts": {
+		"start": "ts-node src/index.ts",
+		"clean": "rmdir /s/q lib",
+		"build": "yarn build:esm6 && yarn build:types && yarn build:umd && rimraf ./lib/*.tsbuildinfo",
+		"build:esm6": "tsc --project tsconfig.prod.esm6.json",
+		"build:umd": "rollup --config rollup.config.js",
+		"build:types": "tsc --project tsconfig.prod.types.json"
+	},
+	"devDependencies": {
+		"@rollup/plugin-commonjs": "^22.0.1",
+		"@rollup/plugin-node-resolve": "^13.3.0",
+		"rollup": "^2.77.2",
+		"rollup-plugin-terser": "^7.0.2",
+		"ts-node": "^10.9.1",
+		"typescript": "^5.4.5"
+	},
+	"dependencies": {},
+	"publishConfig": {
+		"registry": "https://registry.npmjs.org/"
+	},
+	"keywords": [
+		"web component",
+		"hooks"
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/FiredRice/toys-web/packages/core"
+	},
+	"files": [
+		"lib",
+		"LICENSE"
+	],
+	"engines": {}
+}

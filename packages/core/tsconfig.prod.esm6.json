@@ -1,0 +1,10 @@
+{
+	"extends": "./tsconfig.prod.json",
+	"compilerOptions": {
+		"composite": false,
+		"module": "ES6",
+		"target": "ES6",
+		"outDir": "lib/esm6",
+		"removeComments": true
+	}
+}

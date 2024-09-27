@@ -1,0 +1,22 @@
+{
+	"name": "vite-toys-web-jsx",
+	"version": "1.0.0",
+	"description": "toys-web的Vite项目jsx解析插件",
+	"main": "lib/index.js",
+	"scripts": {
+		"start": "ts-node ./src/index.ts",
+		"build": "tsc --project tsconfig.prod.cjs.json"
+	},
+	"author": "",
+	"license": "ISC",
+	"devDependencies": {
+		"@types/csso": "^5.0.4",
+		"@types/less": "^3.0.6",
+		"ts-node": "^10.9.1",
+		"typescript": "^5.4.5"
+	},
+	"dependencies": {
+		"csso": "^5.0.5",
+		"less": "^4.2.0"
+	}
+}
