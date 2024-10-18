@@ -31,7 +31,7 @@ export function useState<T = any>(value: T): [Accessor<T>, Setter<T>] {
     const subs: Subs = new Set();
 
     const getter = () => {
-        const effect = effectStack.at(-1);
+        const effect = effectStack[effectStack.length - 1];
         if (effect) {
             subscribe(effect, subs);
         }

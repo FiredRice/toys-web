@@ -1,10 +1,11 @@
 {
 	"name": "vite-toys-web-jsx",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "toys-web 的 Vite 项目 jsx 解析插件",
 	"author": "东北炒饭",
 	"license": "MIT",
 	"main": "lib/index.js",
+	"typings": "lib/types/index.d.ts",
 	"scripts": {
 		"start": "ts-node ./src/index.ts",
 		"build": "tsc --project tsconfig.prod.cjs.json"
