@@ -102,7 +102,7 @@ export function useDisconnectedCallback(fn: Function) {
     globalHooks.onDisconnectedCallback.push(fn);
 }
 
-const contextMap = new WeakMap<symbol, {
+const contextMap = new Map<symbol, {
     key: HTMLElement;
     value: any;
 }[]>();
