@@ -174,7 +174,7 @@ export function useContext<T>(context: Context<T>): Accessor<T> {
     return value;
 }
 
-export function WebComponent(fn: FunctionComponent) {
+export function WebComponent(fn: FunctionComponent): CustomElementConstructor {
     globalHooks.reset();
 
     let html = '';

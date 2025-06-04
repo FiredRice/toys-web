@@ -413,25 +413,20 @@ const [list, setList] = useState([
     { id: 2, name: 'Tom' }
 ]);
 
-function onLiClick() {
-    console.log(this.$data);
-}
-
 diff({
     el: ul,
     data: list,
     render: function(record) {
         const li = createElement('li');
         li.className = 'your-classname';
-        li.$data = record;
-        li.addEventListener('click', onLiClick);
+        li.textContent = record.name;
+        li.onclick = function() {
+            console.log(record);
+        };
         return li;
     },
     update: function(li, record) {
-        const oldId = li.$data.id;
-        if (oldId !== record.id) {
-            li.$data = record;
-        }
+        li.textContent = record.name;
     }
 });
 ```
@@ -479,26 +474,21 @@ function useDynamicList<T>(value: T[], options?: DynamicListOptions<T>): List<T>
 const shadowRoot = useShadowRoot();
 const ul = shadowRoot?.querySelector('ul');
 
-function onLiClick() {
-    console.log(this.$data);
-}
-
 const list = useDynamicList([
     { id: 1, name: 'John' },
     { id: 2, name: 'Tom' }
 ], {
     el: ul,
     update: function(li, record) {
-        const oldId = li.$data.id;
-        if (oldId !== record.id) {
-            li.$data = record;
-        }
+        li.textContent = record.name;
     },
     render: function(record) {
         const li = createElement('li');
         li.className = 'your-classname';
-        li.$data = record;
-        li.addEventListener('click', onLiClick);
+        li.textContent = record.name;
+        li.onclick = function() {
+            console.log(record);
+        };
         return li;
     },
 });

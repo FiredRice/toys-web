@@ -4,8 +4,6 @@ import { DiffOptions, DynamicListOptions } from './type';
 export function diff<T>(options: DiffOptions<T>) {
     const { el, data, render, update } = options;
 
-    let prevList = data();
-
     useEffect(function () {
         const curList = [...data()];
         const fragment = document.createDocumentFragment();
@@ -18,20 +16,20 @@ export function diff<T>(options: DiffOptions<T>) {
             }
         } else {
             const childNodes = el.childNodes;
-            const length = Math.max(prevList.length, curList.length);
+            const childLength = childNodes.length;
+            const length = Math.max(childLength, curList.length);
             for (let i = 0; i < length; i++) {
                 const record = curList[i];
                 const node = childNodes[i];
-                if (i < prevList.length && i < curList.length) {
+                if (i < childLength && i < curList.length) {
                     update(node, record, i, curList);
                 } else if (i < curList.length) {
                     fragment.appendChild(render(record, i, curList));
-                } else if (node) {
-                    node.remove();
+                } else {
+                    node?.remove();
                 }
             }
         }
-        prevList = curList;
         el.appendChild(fragment);
     });
 }
@@ -159,7 +157,6 @@ export function useDynamicList<T>(value: T[], options?: DynamicListOptions<T>) {
 
     function resetList(value: T[]) {
         if (el) {
-            const prevLength = list().length;
             const curList = value;
             const fragment = document.createDocumentFragment();
             if (!update) {
@@ -170,16 +167,17 @@ export function useDynamicList<T>(value: T[], options?: DynamicListOptions<T>) {
                 }
             } else {
                 const childNodes = el.childNodes;
-                const length = Math.max(prevLength, curList.length);
+                const childLength = childNodes.length;
+                const length = Math.max(childLength, curList.length);
                 for (let i = 0; i < length; i++) {
                     const record = curList[i];
                     const node = childNodes[i];
-                    if (i < prevLength && i < curList.length) {
+                    if (i < childLength && i < curList.length) {
                         update(node, record, i, curList);
                     } else if (i < curList.length) {
                         fragment.appendChild(render!(record, i, curList));
-                    } else if (node) {
-                        node.remove();
+                    } else {
+                        node?.remove();
                     }
                 }
             }
