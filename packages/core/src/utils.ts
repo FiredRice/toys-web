@@ -17,6 +17,7 @@ export function diff<T>(options: DiffOptions<T>) {
         } else {
             const childNodes = el.childNodes;
             const childLength = childNodes.length;
+            let removedList: ChildNode[] = [];
             const length = Math.max(childLength, curList.length);
             for (let i = 0; i < length; i++) {
                 const record = curList[i];
@@ -25,10 +26,12 @@ export function diff<T>(options: DiffOptions<T>) {
                     update(node, record, i, curList);
                 } else if (i < curList.length) {
                     fragment.appendChild(render(record, i, curList));
-                } else {
-                    node?.remove();
+                } else if (node) {
+                    removedList.push(node);
                 }
             }
+            removedList.forEach(n => n.remove());
+            removedList = [];
         }
         el.appendChild(fragment);
     });
@@ -168,6 +171,7 @@ export function useDynamicList<T>(value: T[], options?: DynamicListOptions<T>) {
             } else {
                 const childNodes = el.childNodes;
                 const childLength = childNodes.length;
+                let removedList: ChildNode[] = [];
                 const length = Math.max(childLength, curList.length);
                 for (let i = 0; i < length; i++) {
                     const record = curList[i];
@@ -176,10 +180,12 @@ export function useDynamicList<T>(value: T[], options?: DynamicListOptions<T>) {
                         update(node, record, i, curList);
                     } else if (i < curList.length) {
                         fragment.appendChild(render!(record, i, curList));
-                    } else {
-                        node?.remove();
+                    } else if (node) {
+                        removedList.push(node);
                     }
                 }
+                removedList.forEach(n => n.remove());
+                removedList = [];
             }
             el.appendChild(fragment);
         }
