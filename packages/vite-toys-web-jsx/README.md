@@ -28,10 +28,16 @@ import toysWebJsx from 'vite-toys-web-jsx';
 
 export default defineConfig({
     plugins: [
-        toysWebJsx()
+        toysWebJsx({
+            minify: {
+                removeComments: true
+            }
+        })
     ]
 });
 ```
+
+**注意：** 插件使用 `html-minifier` 压缩 html 代码，配置属性可通过 `minify` 传入。
 
 ## 功能介绍
 
@@ -70,12 +76,7 @@ customElements.define('toys-box', Box);
 import { WebComponent, useShadowRoot, useConnectedCallback, useProps, useWatch, useComponentInstance } from 'toys-web';
 
 const Box = WebComponent(function () {
-    return `
-        <style>.box{color:#1677ff;}</style>
-        <div>
-            <slot></slot>
-        </div>
-    `;
+    return `<style>.box{color:#1677ff;}</style><div><slot></slot></div>`;
 });
 
 customElements.define('toys-box', Box);
