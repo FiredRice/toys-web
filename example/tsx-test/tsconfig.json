@@ -1,0 +1,16 @@
+{
+	"extends": "../../tsconfig.json",
+	"compilerOptions": {
+		"module": "ESNext",
+		"moduleResolution": "Bundler",
+		"target": "ESNext",
+		"jsx": "preserve",
+		"noEmit": true,
+		"rootDir": "./",
+	},
+	"references": [
+		{
+			"path": "../../packages/core"
+		}
+	]
+}

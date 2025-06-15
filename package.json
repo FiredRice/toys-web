@@ -2,7 +2,8 @@
 	"name": "toys-web",
 	"private": true,
 	"workspaces": [
-		"packages/*"
+		"packages/*",
+		"example/*"
 	],
 	"license": "MIT",
 	"homepage": "https://github.com/FiredRice/ts-mugen",
