@@ -35,7 +35,13 @@ export default defineConfig({
                 removeComments: true
             }
         })
-    ]
+    ],
+    // 若 jsx 为 true，则需追加如下配置
+    esbuild: {
+        jsxFactory: 'h',
+        jsxFragment: 'Fragment',
+        jsxImportSource: 'toys-web'
+    },
 });
 ```
 
