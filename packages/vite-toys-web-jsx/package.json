@@ -1,6 +1,6 @@
 {
 	"name": "vite-toys-web-jsx",
-	"version": "2.0.0",
+	"version": "2.0.1",
 	"description": "toys-web 的 Vite 项目 jsx 解析插件",
 	"author": "东北炒饭",
 	"license": "MIT",

@@ -203,7 +203,7 @@ type Options = {
     jsx?: boolean;
 };
 
-export default function testPlugin(options?: Options): any {
+export default function toysWebJsxPlugin(options?: Options): any {
     return {
         name: 'toys-web-jsx',
         // 应用插件的入口点
