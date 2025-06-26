@@ -1,6 +1,7 @@
 import { Accessor, Context, FunctionComponent, MapFunction, ReturnTypeOfProperties } from './type';
 import { MetaData, transPropString } from './common';
 import { useEffect, useState } from './hooks';
+import { fiberTreeMap, jsx } from './jsx';
 
 type Instance = HTMLElement | null;
 
@@ -9,7 +10,7 @@ const collector = new WeakMap<HTMLElement, MetaData>();
 class WebComponentHooks {
     private handler: Instance = null;
     private shadowRootInit: ShadowRootInit = { mode: 'closed' };
-    private props: MapFunction = {};
+    private attrs: MapFunction = {};
 
     public onAdoptedCallback: Function[] = [];
     public onConnectedCallback: (() => Function | void)[] = [];
@@ -18,7 +19,7 @@ class WebComponentHooks {
     public reset() {
         this.handler = null;
         this.shadowRootInit = { mode: 'closed' };
-        this.props = {};
+        this.attrs = {};
         this.onAdoptedCallback = [];
         this.onConnectedCallback = [];
         this.onDisconnectedCallback = [];
@@ -32,15 +33,15 @@ class WebComponentHooks {
         return this.shadowRootInit;
     }
 
-    public setProps<P extends MapFunction>(props: P) {
-        this.props = {
-            ...this.props,
+    public setAttrs<P extends MapFunction>(props: P) {
+        this.attrs = {
+            ...this.attrs,
             ...props
         };
     }
 
-    public getProps() {
-        return this.props;
+    public getAttrs() {
+        return this.attrs;
     }
 
     public setHandler(handler: Instance) {
@@ -68,14 +69,36 @@ export function useShadowRoot(init: ShadowRootInit = { mode: 'closed' }): Shadow
     return meta?.shadowRoot || handler.shadowRoot;
 }
 
-export function useProps<Props extends MapFunction>(props: Props): Readonly<ReturnTypeOfProperties<Props>> {
-    globalHooks.setProps(props);
+export function useAttrs<Attrs extends MapFunction>(attrs: Attrs): Readonly<ReturnTypeOfProperties<Attrs>> {
+    globalHooks.setAttrs(attrs);
     const handler = globalHooks.getHandler();
     if (handler === null) {
         return {} as any;
     }
     const meta = collector.get(handler);
-    return (meta?.props || {}) as any;
+    return (meta?.attrs || {}) as any;
+}
+
+export function useProps<T extends Record<string, any>>(props: T): T {
+    const instance = useComponentInstance();
+    if (!instance) {
+        return { ...props };
+    }
+    const result: any = {};
+    Object.entries(props).forEach(([k, v]) => {
+        const [getter, setter] = useState(v);
+        Object.defineProperty(instance, k, {
+            get: getter,
+            set: setter,
+            enumerable: true
+        });
+        Object.defineProperty(result, k, {
+            get: getter,
+            set: setter,
+            enumerable: true
+        });
+    });
+    return result;
 }
 
 export function useWatch(callback: (this: HTMLElement) => (undefined | Function | void)) {
@@ -102,7 +125,7 @@ export function useDisconnectedCallback(fn: Function) {
     globalHooks.onDisconnectedCallback.push(fn);
 }
 
-const contextMap = new Map<symbol, {
+const contextMap = new WeakMap<symbol, {
     key: HTMLElement;
     value: any;
 }[]>();
@@ -122,8 +145,13 @@ export function createContext<T>(defaultValue: T): Context<T> {
         contextMap.set(id, list);
 
         useDisconnectedCallback(function () {
-            const list = contextMap.get(id) || [];
-            contextMap.set(id, list.filter(i => i.key !== instance));
+            let list = contextMap.get(id) || [];
+            list = list.filter(i => i.key !== instance);
+            if (!list.length) {
+                contextMap.delete(id);
+            } else {
+                contextMap.set(id, list);
+            }
         });
     }
 
@@ -177,21 +205,21 @@ export function useContext<T>(context: Context<T>): Accessor<T> {
 export function WebComponent(fn: FunctionComponent): CustomElementConstructor {
     globalHooks.reset();
 
-    let html = '';
+    let html: any = '';
     try {
         html = (fn as Function)();
     } catch (error) {
     }
 
     const shadowRootInit = globalHooks.getShadowRootInit();
-    const props = globalHooks.getProps();
+    const attrs = globalHooks.getAttrs();
 
     return class extends HTMLElement {
         constructor() {
             super();
             try {
                 const root = this.attachShadow(shadowRootInit);
-                if (!!html) {
+                if (!!html && typeof html === 'string') {
                     root.innerHTML = html;
                 }
 
@@ -199,11 +227,11 @@ export function WebComponent(fn: FunctionComponent): CustomElementConstructor {
                 meta.shadowRoot = root;
                 collector.set(this, meta);
 
-                for (const key in props) {
-                    const call = props[key];
+                for (const key in attrs) {
+                    const call = attrs[key];
                     const v = call(transPropString(this.getAttribute(key) || ''));
                     const [getter, setter] = useState(v);
-                    Object.defineProperty(meta.props, key, {
+                    Object.defineProperty(meta.attrs, key, {
                         get: getter,
                         set: setter,
                         enumerable: true
@@ -223,8 +251,15 @@ export function WebComponent(fn: FunctionComponent): CustomElementConstructor {
 
                 const _html = fn.call(this as any);
 
-                if (!html) {
-                    root.innerHTML = _html;
+                if (typeof _html === 'function') {
+                    globalHooks.onConnectedCallback.unshift(function () {
+                        useEffect(() => {
+                            jsx(root, _html);
+                        });
+                    });
+                    globalHooks.onDisconnectedCallback.push(function () {
+                        fiberTreeMap.delete(_html);
+                    });
                 }
 
                 meta.lifeCycle = {
@@ -261,14 +296,14 @@ export function WebComponent(fn: FunctionComponent): CustomElementConstructor {
         }
 
         static get observedAttributes() {
-            return Object.keys(props) || [];
+            return Object.keys(attrs) || [];
         }
 
         attributeChangedCallback(name: string, _: string, newValue: string) {
-            const value = props[name]?.(transPropString(newValue));
+            const value = attrs[name]?.(transPropString(newValue));
             if (collector.has(this)) {
                 const meta = collector.get(this)!;
-                meta.props[name] = value;
+                meta.attrs[name] = value;
             }
         }
     };

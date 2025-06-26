@@ -11,6 +11,9 @@
 	"references": [
 		{
 			"path": "../../packages/core"
+		},
+		{
+			"path": "../../packages/vite-toys-web-jsx"
 		}
 	]
 }

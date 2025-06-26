@@ -16,7 +16,7 @@ export function transPropString(value: string) {
 }
 
 export class MetaData {
-    public props: any = {};
+    public attrs: any = {};
     public shadowRoot: ShadowRoot | null = null;
     public lifeCycle = {
         adoptedCallback: [] as Function[],

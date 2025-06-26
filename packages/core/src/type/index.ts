@@ -16,7 +16,7 @@ export type ReturnTypeOfProperties<T> = {
 export type MapFunction = Record<string, Function>;
 export type MapObject = Record<string, any>;
 
-export type FunctionComponent = (this: HTMLElement & { props: Readonly<MapObject>; }) => string;
+export type FunctionComponent = (this: HTMLElement & { props: Readonly<MapObject>; }) => any;
 
 export type Keyof<T extends MapObject> = keyof T | '';
 
@@ -37,38 +37,4 @@ export interface InternalHooks<T extends MapObject> {
 export interface StoreContextProvicerProps<T extends MapObject> {
     value?: T;
     context?: StoreContextInstance<T>;
-}
-
-export interface DynamicListOptions<T = any> {
-    /**
-     * 挂载容器
-     */
-    el?: HTMLElement | null;
-    /**
-     * 更新节点
-     * @param el 当前节点
-     * @param record 数据
-     * @param index 索引
-     * @param data 列表
-     */
-    update?: (el: any, record: T, index: number, data: readonly T[]) => void;
-    /**
-     * 渲染函数
-     * @param record 数据
-     * @param index 索引
-     * @param data 列表
-     * @returns 创建节点
-     */
-    render: (record: T, index: number, data: readonly T[]) => HTMLElement;
-}
-
-export interface DiffOptions<T = any> extends DynamicListOptions<T> {
-    /**
-     * 挂载容器
-     */
-    el: HTMLElement;
-    /**
-     * 关联 list 数据
-     */
-    data: Accessor<T[]>;
 }

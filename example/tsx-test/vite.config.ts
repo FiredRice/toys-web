@@ -1,5 +1,5 @@
-import { resolve } from 'path';
 import { defineConfig } from 'vite';
+import toysWebPlugin from 'vite-toys-web-jsx';
 
 export default defineConfig({
     build: {
@@ -18,5 +18,8 @@ export default defineConfig({
         jsxImportSource: 'toys-web'
     },
     plugins: [
+        toysWebPlugin({
+            jsx: true
+        }),
     ]
 });

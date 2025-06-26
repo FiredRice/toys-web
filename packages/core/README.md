@@ -90,19 +90,7 @@ class ToysButton extends HTMLElement {
         shadowRoot.innerHTML = `
             <style>
                 button {
-                    border: 1px solid transparent;
-                    border-radius: 4px;
-                    padding: 4px 16px;
-                    user-select: none;
-                    font-size: 14px;
-                    touch-action: manipulation;
-                    outline: none;
-                    display: inline-flex;
-                    align-items: center;
-                    text-align: center;
-                    cursor: pointer;
-                    transition: all 300ms;
-                    box-sizing: border-box;
+                    // ... your styles
                 }
             </style>
             <button type="button">
@@ -153,10 +141,10 @@ customElements.define('toys-button', ToysButton);
 而在引入 `toys-web` 后，组件的定义方式会发生一些变化
 
 ```ts
-import { WebComponent, useShadowRoot, useConnectedCallback, useProps, useWatch, useComponentInstance } from 'toys-web';
+import { WebComponent, useShadowRoot, useConnectedCallback, useAttrs, useWatch, useComponentInstance } from 'toys-web';
 
 const ToysButton = WebComponent(function () {
-    const props = useProps({
+    const attrs = useAttrs({
         htmlType: String
     });
 
@@ -176,25 +164,13 @@ const ToysButton = WebComponent(function () {
     });
 
     useWatch(function () {
-        button!.type = (props.htmlType || 'button') as any;
+        button!.type = (attrs.htmlType || 'button') as any;
     });
 
     return `
         <style>
             button {
-                border: 1px solid transparent;
-                border-radius: 4px;
-                padding: 4px 16px;
-                user-select: none;
-                font-size: 14px;
-                touch-action: manipulation;
-                outline: none;
-                display: inline-flex;
-                align-items: center;
-                text-align: center;
-                cursor: pointer;
-                transition: all 300ms;
-                box-sizing: border-box;
+                // ... your styles
             }
         </style>
         <button type="button">
@@ -208,22 +184,57 @@ customElements.define('toys-button', ToysButton);
 
 在 Toys Web 中我们使用函数的 `return` 来返回自定义组件的模板，通过各个 hooks 来替代原生的方法。
 
-- `useProps` 定义需要监听的属性
+- `useAttrs` 定义需要监听的属性
+- `useProps` 定义需要绑定到组件的响应式属性
 - `useComponentInstance` 获取原生的 `this`
 - `useShadowRoot` 获取原生的 `this.shadowRoot`
 - `useConnectedCallback` 获取原生的 `connectedCallback`，回调函数可以返回一个函数，返回的函数会在 `disconnectedCallback` 时执行
-- `useWatch` 监听 `props` 和 `state` 的变化，当监听的属性发生变化时自动执行回调函数
+- `useWatch` 监听 `attrs`、`props` 和 `state` 的变化，当监听的属性发生变化时自动执行回调函数
 
 ## API
 
 ### WebComponent
 
-用于定义自定义组件，传入的回调函数必须返回一个模板字符串。
+用于定义自定义组件，传入的回调函数可以返回一个jsx函数、模板字符串。（推荐优先使用jsx函数）
 
-```ts
+```tsx
+// jsx 函数
 import { WebComponent } from 'toys-web';
 
 const ToysButton = WebComponent(function () {
+    function onClick() {
+        console.log('toys！');
+    }
+
+    return () => (
+        <button 
+            type="button"
+            onclick={onClick}
+        >
+            <span><slot></slot></span>
+        </button>
+    );
+});
+
+customElements.define('toys-button', ToysButton);
+```
+
+```ts
+// 模板字符串
+import { WebComponent, useShadowRoot } from 'toys-web';
+
+const ToysButton = WebComponent(function () {
+    const shadowRoot = useShadowRoot();
+
+    useConnectedCallback(function () {
+        const button = shadowRoot.querySelector('button')!;
+        button.onclick = onClick;
+    });
+
+    function onClick() {
+        console.log('toys！');
+    }
+
     return `
         <button type="button">
             <span><slot></slot></span>
@@ -233,6 +244,8 @@ const ToysButton = WebComponent(function () {
 
 customElements.define('toys-button', ToysButton);
 ```
+
+可见相同功能下 jsx 函数的写法更加简洁。
 
 ### Hooks
 
@@ -252,19 +265,36 @@ const shadowRoot = useShadowRoot();
 
 `shadowRootInit`：一个 [ShadowRootInit](https://developer.mozilla.org/en-US/docs/Web/API/Element/attachShadow#parameters) 字典
 
-#### useProps
+#### useAttrs
 
-声明并获取需要监听的属性
+声明并获取需要监听的属性，这些属性会绑定到组件的 attributes 上。
 
 ```ts
-const props = useProps({
+const attrs = useAttrs({
     name: String,
     age: Number
 });
 ```
 
 **参数**
-`propsInit`：一个自定义格式化字典，key 为需要监听的属性，value 为改属性预期类型的构造函数，例如：如果要求一个属性的值是 `number` 类型，则可使用 `Number` 构造函数作为其声明的值
+`attrsInit`：一个自定义格式化字典，key 为需要监听的属性，value 为该属性预期类型的构造函数，例如：如果要求一个属性的值是 `number` 类型，则可使用 `Number` 构造函数作为其声明的值
+
+**注意**
+attrs 是一个响应性对象，因此解构 `attrs` 会丢失响应性
+
+#### useProps
+
+声明并获取需要监听的属性.
+
+```ts
+const props = useProps({
+    name: '张三',
+    age: 18
+});
+```
+
+**参数**
+`propsInit`：一个自定义默认值字典，key 为需要绑定的属性，value 为默认值。
 
 **注意**
 props 是一个响应性对象，因此解构 `props` 会丢失响应性
@@ -304,17 +334,22 @@ setState(1);
 
 #### useWatch
 
-监听 `props` 和 `state` 的变化
+监听 `attrs`、`props` 和 `state` 的变化
 
 ```ts
-const props = useProps({
+const attrs = useAttrs({
     age: Number
+});
+
+const props = useProps({
+    name: '张三'
 });
 
 const [state, setState] = useState(0);
 
 useWatch(function() {
-    console.log('age', props.age);
+    console.log('age', attrs.age);
+    console.log('namne', props.name);
     console.log('state', state());
 });
 ```
@@ -398,192 +433,12 @@ useWatch(function() {
 });
 ```
 
-### 简易 diff
-
-#### diff
-
-简易的 diff 函数，简化列表的渲染操作。
-
-```ts
-const shadowRoot = useShadowRoot();
-const ul = shadowRoot?.querySelector('ul');
-
-const [list, setList] = useState([
-    { id: 1, name: 'John' },
-    { id: 2, name: 'Tom' }
-]);
-
-diff({
-    el: ul,
-    data: list,
-    render: function(record) {
-        const li = createElement('li');
-        li.className = 'your-classname';
-        li.textContent = record.name;
-        li.onclick = function() {
-            console.log(record);
-        };
-        return li;
-    },
-    update: function(li, record) {
-        li.textContent = record.name;
-    }
-});
-```
-
-**参数**
-
-```ts
-interface DiffOptions<T = any> extends DynamicListOptions<T> {
-    /**
-     * 数据挂载的容器节点
-     */
-    el: HTMLElement;
-    /**
-     * 关联 list 数据
-     */
-    data: () => T[];
-    /**
-     * 节点更新函数，可以在这里定义如何更新节点
-     * @param el 当前节点
-     * @param record 数据
-     * @param index 索引
-     * @param data 列表
-     */
-    update?: (el: any, record: T, index: number, data: readonly T[]) => void;
-    /**
-     * 节点渲染函数，用于创建节点，当未传入 update 时，节点将不会更新，而是重新创建
-     * @param record 数据
-     * @param index 索引
-     * @param data 列表
-     * @returns 创建节点
-     */
-    render: (record: T, index: number, data: readonly T[]) => HTMLElement;
-}
-```
-
-#### useDynamicList
-
-更高性能的列表处理方案
-
-```ts
-function useDynamicList<T>(value: T[], options?: DynamicListOptions<T>): List<T>;
-```
-
-```ts
-const shadowRoot = useShadowRoot();
-const ul = shadowRoot?.querySelector('ul');
-
-const list = useDynamicList([
-    { id: 1, name: 'John' },
-    { id: 2, name: 'Tom' }
-], {
-    el: ul,
-    update: function(li, record) {
-        li.textContent = record.name;
-    },
-    render: function(record) {
-        const li = createElement('li');
-        li.className = 'your-classname';
-        li.textContent = record.name;
-        li.onclick = function() {
-            console.log(record);
-        };
-        return li;
-    },
-});
-```
-
-**参数**
-
-- `value`：列表数据的默认值
-- `options`（可选）：`DynamicListOptions`
-
-```ts
-interface DynamicListOptions<T = any> {
-    /**
-     * 数据挂载的容器节点
-     */
-    el?: HTMLElement | null;
-    /**
-     * 节点更新函数，可以在这里定义如何更新节点
-     * @param el 当前节点
-     * @param record 数据
-     * @param index 索引
-     * @param data 列表
-     */
-    update?: (el: any, record: T, index: number, data: readonly T[]) => void;
-    /**
-     * 节点渲染函数，用于创建节点，当未传入 update 时，节点将不会更新，而是重新创建
-     * @param record 数据
-     * @param index 索引
-     * @param data 列表
-     * @returns 创建节点
-     */
-    render: (record: T, index: number, data: readonly T[]) => HTMLElement;
-}
-```
-
-**返回**
-对象 List
-
-```ts
-interface List<T = any> {
-    /**
-     * 在列表末尾添加元素
-     */
-    push: (item: T) => void;
-    /**
-     * 移动元素
-     */
-    move: (oldIndex: number, newIndex: number) => void;
-    /**
-     * 删除指定元素
-     */
-    remove: (index: number) => void;
-    /**
-     * 替换指定元素
-     */
-    replace: (index: number, item: T) => void;
-    /**
-     * 移除末尾元素
-     */
-    pop: () => void;
-    /**
-     * 在列表起始位置添加元素
-     */
-    unshift: (item: T) => void;
-    /**
-     * 移除起始位置元素
-     */
-    shift: () => void;
-    /**
-     * 在指定位置插入元素
-     */
-    insert: (index: number, item: T) => void;
-    /**
-     * 在指定位置插入多个元素
-     */
-    merge: (index: number, items: T[]) => void;
-    /**
-     * 重新设置 list 的值
-     */
-    resetList: (value: T[]) => void;
-    /**
-     * 清空 list
-     */
-    clear: () => void;
-    /**
-     * 获取当前 list 的值
-     */
-    value: () => T[];
-}
-```
-
 ## 原理
 
-1. 当调用 `WebComponent` 时，立即执行回调函数，获取 `props` 的配置项、`shadowRoot` 的配置项、组件的模板。
+1. 当调用 `WebComponent` 时，立即执行回调函数，获取 `attrs` 的配置项、`shadowRoot` 的配置项、组件的模板字符串。
 2. 当组件实例化时会再次执行回调函数，此时会根据步骤 1 中收集到的配置初始化组件，并在此时收集各个生命周期的回调函数
+    - 若组件的返回值是模板字符串，则会在实例化时将其附加到 shadowRoot 上
+    - 否则会在 connectedCallback 生命周期中附加到 shadowRoot 上
 3. 在各个生命周期中执行相应的回调函数
 
 ## 注意事项
@@ -596,18 +451,18 @@ interface List<T = any> {
 const instance = useComponentInstance();
 const shadowRoot = useShadowRoot();
 
-const div = shadowRoot?.querySelector('div');
-
-if (instance) {
-    div!.className = 'your-classname';
+useConnectedCallback(function() {
+    const div = shadowRoot!.querySelector('div')!;
+    div.className = 'your-classname';
     // ... Your other operations
-}
+});
 ```
 
-3. `useEffect` 实际上也能够监听 `props` ，但同样因为问题 1 导致在该处执行监听时需格外注意 `instance` 与 `shadowRoot` 是否为 `null` ，徒增心智负担。
+3. `useEffect` 实际上也能够监听 `attrs` 和 `props` ，但同样因为问题 1 导致在该处执行监听时需格外注意 `instance` 与 `shadowRoot` 是否为 `null` ，徒增心智负担。
 因此 Toys Web 提供了 `useWatch` ，该 hooks 的回调仅会在组件真正实例化后执行，无需关心 `instance` 与 `shadowRoot`
 
 ## 参考项目
-[solidjs](https://github.com/solidjs/solid)
 
-[ahooks](https://github.com/alibaba/hooks)
+[react](https://github.com/facebook/react)
+
+[solidjs](https://github.com/solidjs/solid)

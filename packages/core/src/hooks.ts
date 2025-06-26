@@ -52,7 +52,12 @@ export function useState<T = any>(value: T): [Accessor<T>, Setter<T>] {
 export function useEffect(callback: () => (undefined | Function | void)) {
     let prevFn;
 
-    const execute = () => {
+    const effect: Effect = {
+        execute,
+        deps: new Set()
+    };
+
+    function execute() {
         cleanup(effect);
         effectStack.push(effect);
         try {
@@ -65,10 +70,11 @@ export function useEffect(callback: () => (undefined | Function | void)) {
         }
     };
 
-    const effect: Effect = {
-        execute,
-        deps: new Set()
-    };
-
     execute();
+}
+
+export function useRef<T>(value?: T) {
+	return {
+		current: value
+	};
 }
