@@ -1,7 +1,7 @@
 import { Accessor, Context, FunctionComponent, MapFunction, ReturnTypeOfProperties } from './type';
 import { MetaData, transPropString } from './common';
 import { useEffect, useState } from './hooks';
-import { fiberTreeMap, jsx } from './jsx';
+import { jsx } from './jsx';
 
 type Instance = HTMLElement | null;
 
@@ -252,13 +252,10 @@ export function WebComponent(fn: FunctionComponent): CustomElementConstructor {
                 const _html = fn.call(this as any);
 
                 if (typeof _html === 'function') {
-                    globalHooks.onConnectedCallback.unshift(function () {
+                    globalHooks.onConnectedCallback.unshift(() => {
                         useEffect(() => {
-                            jsx(root, _html);
+                            jsx.call(this, root, _html);
                         });
-                    });
-                    globalHooks.onDisconnectedCallback.push(function () {
-                        fiberTreeMap.delete(_html);
                     });
                 }
 

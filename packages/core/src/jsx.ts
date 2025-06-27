@@ -11,18 +11,18 @@ class Fiber {
     public value?: any;
 }
 
-export const fiberTreeMap = new WeakMap<Function, Fiber>();
+const FIBER = Symbol();
 
 export function jsx(shadowRoot: ShadowRoot, fn: Function) {
     const fiberTree: Fiber = fn();
-    if (!fiberTreeMap.has(fn)) {
+    if (!Reflect.has(this, FIBER)) {
         const rootNode = createTree(fiberTree);
         shadowRoot.appendChild(rootNode);
     } else {
-        const prevTree = fiberTreeMap.get(fn)!;
+        const prevTree = this[FIBER];
         updateTree(prevTree, fiberTree);
     }
-    fiberTreeMap.set(fn, fiberTree);
+    this[FIBER] = fiberTree;
 }
 
 function setProps(node: HTMLElement, props: any) {
