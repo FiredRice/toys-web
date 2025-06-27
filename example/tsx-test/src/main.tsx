@@ -1,4 +1,3 @@
-import './utils';
 import App from './app';
 import Pagination from './components/Pagination';
 import Table from './components/Table';
@@ -32,5 +31,3 @@ loadBtn.onclick = load;
 
 const unmountBtn: HTMLButtonElement = document.querySelector('#unmount')!;
 unmountBtn.onclick = unmount;
-
-// window['render'](document.querySelector('#app'), App);

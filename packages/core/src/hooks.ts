@@ -74,7 +74,30 @@ export function useEffect(callback: () => (undefined | Function | void)) {
 }
 
 export function useRef<T>(value?: T) {
-	return {
-		current: value
-	};
+    return {
+        current: value
+    };
+}
+
+export function useDeferredValue<T>(value: Accessor<T>): Accessor<T> {
+	let v = value();
+	let idleTimer: number | null = null;
+
+	const [state, setState] = useState<T>(v);
+
+	useEffect(() => {
+		v = value();
+		if (idleTimer !== null) {
+			cancelIdleCallback(idleTimer);
+			idleTimer = null;
+		}
+		idleTimer = requestIdleCallback((deadline) => {
+			if (deadline.timeRemaining() > 0) {
+				setState(v);
+			}
+			idleTimer = null;
+		});
+	});
+
+	return state;
 }

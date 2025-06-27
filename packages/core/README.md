@@ -8,10 +8,12 @@
 - [Hooks](#hooks)<br />
     - [useComponentInstance](#usecomponentinstance)<br />
     - [useShadowRoot](#useshadowroot)<br />
+    - [useAttrs](#useattrs)<br />
     - [useProps](#useprops)<br />
     - [useState](#usestate)<br />
     - [useEffect](#useeffect)<br />
     - [useWatch](#usewatch)<br />
+    - [useDeferredValue](#usedeferredvalue)<br />
     - [useCreated](#usecreated)<br />
     - [useAdoptedCallback](#useadoptedcallback)<br />
     - [useConnectedCallback](#useconnectedcallback)<br />
@@ -19,9 +21,6 @@
 - [Context](#context)<br />
     - [createContext](#createcontext)<br />
     - [useContext](#usecontext)<br />
-- [简易 diff](#简易-diff)<br />
-    - [diff](#diff)<br />
-    - [useDynamicList](#usedynamiclist)<br />
 - [原理](#原理)<br />
 - [注意事项](#注意事项)<br />
 - [参考项目](#参考项目)<br />
@@ -353,6 +352,24 @@ useWatch(function() {
     console.log('state', state());
 });
 ```
+
+#### useDeferredValue
+
+延迟更新的 `state`
+
+```ts
+const [count, setCount] = useState(0);
+const deferredCount = useDeferredValue(count);
+```
+
+**参数**
+任意值
+
+**返回**
+两个元素的数组：getter 和 setter
+
+- 调用 getter（例如 count()）返回 `state` 的当前值。
+- 调用 setter（例如 setCount(nextCount)）设置 signal 的值，
 
 #### useCreated
 
