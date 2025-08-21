@@ -1,5 +1,5 @@
 import { useComponentInstance, useConnectedCallback, useDeferredValue, useEffect, useShadowRoot, useState, useWatch, WebComponent } from 'toys-web';
-import './app.css';
+// import './app.css';
 import { Accessor } from 'toys-web/lib/types/type';
 
 const App = WebComponent(() => {
@@ -8,6 +8,7 @@ const App = WebComponent(() => {
 
 	const [text, setText] = useState<string>('');
 
+	const [className, setClassName] = useState<string | undefined>('aaa');
 	const deferredText = useDeferredValue(text);
 
 	const list = new Array(10000).fill(0);
@@ -19,14 +20,20 @@ const App = WebComponent(() => {
 
 				oninput={e => setText(e.target.value || '')}
 			/>
-
-			<ul>
+			<button
+				type='button'
+				className={className()}
+				onclick={() => setClassName(undefined)}
+			>
+				切换
+			</button>
+			{/* <ul>
 				{list.map((_, i) => (
 					<li key={i}>
 						{deferredText()}
 					</li>
 				))}
-			</ul>
+			</ul> */}
 		</div>
 	);
 });

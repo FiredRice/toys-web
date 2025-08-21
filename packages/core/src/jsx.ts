@@ -71,15 +71,18 @@ function updateProps(pre: Fiber, cur: Fiber) {
                     node.setAttribute('style', curProps[key]);
                 }
             } else {
-                const preStyles = { ...preProps[key] };
                 const curStyles = curProps[key];
-                Object.entries(curStyles).forEach(([k, v]) => {
-                    node.style.setProperty(k, String(v));
-                    Reflect.deleteProperty(preStyles, k);
-                });
-                Object.keys(preStyles).forEach(k => {
-                    node.style.removeProperty(k);
-                });
+                const styleStr = Object.entries(curStyles).reduce((pre, cur) => {
+                    pre += `${cur[0]}:${cur[1]};`;
+                    return pre;
+                }, '');
+                node.setAttribute('style', styleStr);
+            }
+        } else if (key === 'className') {
+            if (!curProps[key] && !!preProps[key]) {
+                node[key] = '';
+            } else if (preProps[key] !== curProps[key]) {
+                node[key] = curProps[key];
             }
         } else {
             if (preProps[key] !== curProps[key]) {
