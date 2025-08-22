@@ -1,9 +1,11 @@
 import App from './app';
+import Link from './components/Link';
 import Pagination from './components/Pagination';
 import Table from './components/Table';
 
 customElements.define(Pagination.tag, Pagination.component);
 customElements.define(Table.tag, Table.component);
+customElements.define('fr-link', Link);
 
 customElements.define('fr-app', App);
 

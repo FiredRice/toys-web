@@ -1,6 +1,7 @@
 import { useComponentInstance, useConnectedCallback, useDeferredValue, useEffect, useShadowRoot, useState, useWatch, WebComponent } from 'toys-web';
 // import './app.css';
 import { Accessor } from 'toys-web/lib/types/type';
+import Link from './components/Link';
 
 const App = WebComponent(() => {
 	const instance = useComponentInstance();
@@ -20,6 +21,11 @@ const App = WebComponent(() => {
 
 				oninput={e => setText(e.target.value || '')}
 			/>
+			<Link
+				onClick={() => console.log('sss')}
+			>
+				测试
+			</Link>
 			<button
 				type='button'
 				className={className()}

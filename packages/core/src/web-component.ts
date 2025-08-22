@@ -1,4 +1,4 @@
-import { Accessor, Context, FunctionComponent, MapFunction, ReturnTypeOfProperties } from './type';
+import { Accessor, Context, FunctionCall, MapFunction, ReturnTypeOfProperties } from './type';
 import { MetaData, transPropString } from './common';
 import { useEffect, useState } from './hooks';
 import { jsx } from './jsx';
@@ -202,7 +202,7 @@ export function useContext<T>(context: Context<T>): Accessor<T> {
     return value;
 }
 
-export function WebComponent(fn: FunctionComponent): CustomElementConstructor {
+export function WebComponent(fn: FunctionCall): CustomElementConstructor {
     globalHooks.reset();
 
     let html: any = '';

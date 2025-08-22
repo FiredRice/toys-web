@@ -16,7 +16,7 @@ export type ReturnTypeOfProperties<T> = {
 export type MapFunction = Record<string, Function>;
 export type MapObject = Record<string, any>;
 
-export type FunctionComponent = (this: HTMLElement & { props: Readonly<MapObject>; }) => any;
+export type FunctionCall = (this: HTMLElement) => any;
 
 export type Keyof<T extends MapObject> = keyof T | '';
 

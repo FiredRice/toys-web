@@ -270,6 +270,13 @@ function updateTree(pre: Fiber, cur: Fiber) {
 export function h(tag: symbol | string | Function, props: any, ...children: any[]) {
 
     if (typeof tag === 'function') {
+        if (tag.prototype instanceof HTMLElement) {
+            const name = customElements.getName(tag as CustomElementConstructor);
+            if (!name) {
+                throw new Error('Undefined customElement');
+            }
+            return h(name, props, ...children);
+        }
         return tag(props, ...children);
     }
 
